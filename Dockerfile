@@ -1,12 +1,10 @@
-# Use a lightweight Java runtime
-FROM openjdk:21-jdk-slim
+# Use a supported Java 21 image from Eclipse Temurin
+FROM eclipse-temurin:21-jdk-jammy
 
 # Set working directory inside the container
 WORKDIR /app
 
 # Copy the generated jar file into the container
-# (Make sure to run 'mvn clean package' locally first if testing Docker locally,
-# but Render will build it for us)
 COPY target/*.jar app.jar
 
 # Expose the port your app runs on
