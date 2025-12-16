@@ -7,14 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-// 👇 1. DISABLED: Slashes added
-// @Configuration
+@Configuration  // 👈 No slashes!
 public class AdminSeeder {
 
-    // 👇 2. DISABLED: Slashes added
-    // @Bean
+    @Bean  // 👈 No slashes!
     CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
+            // This is perfect logic. It creates the user if they don't exist.
             if (!userRepository.existsByUsername("admin2")) {
                 User admin = new User();
                 admin.setUsername("admin2");

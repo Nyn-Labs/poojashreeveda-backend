@@ -14,7 +14,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Allow ALL endpoints
-                        .allowedOrigins("http://localhost:3000") // Allow Frontend
+                        .allowedOrigins("https://poojashree-frontend.vercel.app/") // Allow Frontend
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow actions
                         .allowedHeaders("*")
                         .allowCredentials(true);
