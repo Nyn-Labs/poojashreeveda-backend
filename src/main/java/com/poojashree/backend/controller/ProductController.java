@@ -16,67 +16,63 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class ProductController {
 
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Autowired
-    ImageService imageService;
+    private ImageService imageService;
 
-    // We use this to convert the JSON string back into a Java Object
-    // We manually create the tool. No @Autowired needed!
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // 1. Add Product WITH Images
+    // ===============================
+    // ADD PRODUCT WITH IMAGES
+    // ===============================
     @PostMapping("/add")
     public ResponseEntity<?> addProduct(
-            @RequestParam("productData") String productData,  // The JSON data as a String
-            @RequestParam("images") MultipartFile[] files     // The array of Image files
+            @RequestParam("productData") String productData,
+            @RequestParam("images") MultipartFile[] files
     ) throws IOException {
 
-        // 1. Convert the String "productData" into a Product Object
         Product product = objectMapper.readValue(productData, Product.class);
 
-        // 2. Upload images to Cloudinary and get URLs
         List<String> imageUrls = new ArrayList<>();
-
         for (MultipartFile file : files) {
             String url = imageService.uploadImage(file);
             imageUrls.add(url);
         }
 
-        // 3. Save the URLs to the Product
         product.setImageUrls(imageUrls);
-
-        // 4. Save to MongoDB
         Product savedProduct = productRepository.save(product);
 
         return ResponseEntity.ok(savedProduct);
     }
 
-    // 2. Get All Products
+    // ===============================
+    // GET ALL PRODUCTS
+    // ===============================
     @GetMapping("/all")
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-    // 3. Get Single Product by ID
+    // ===============================
+    // GET PRODUCT BY ID
+    // ===============================
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable String id) {
         Optional<Product> product = productRepository.findById(id);
-        if (product.isPresent()) {
-            return ResponseEntity.ok(product.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return product.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // 4. Delete Product
+    // ===============================
+    // DELETE PRODUCT
+    // ===============================
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable String id) {
         productRepository.deleteById(id);
-        return ResponseEntity.ok("Product deleted successfully!");
+        return ResponseEntity.ok("Product deleted successfully");
     }
 }
